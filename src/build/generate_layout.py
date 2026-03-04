@@ -27,6 +27,8 @@ def parse_layout(text: str):
         g = g.strip()
         if g.startswith('(defcfg'):
             pass
+        elif g.startswith('(defalias'):
+            pass
         elif g.startswith('(defsrc'):
             src = parse_keys(g, '\t')
         elif g.startswith('(deflayer'):
@@ -42,6 +44,7 @@ def parse_layout(text: str):
 
 def main():
     text = Path('miryoku_kmonad.kbd').read_text()
+    text = Path('c302-colemakdh-base.kbd').read_text()
     layout = parse_layout(text)
 
     print('Src:', layout.src)
