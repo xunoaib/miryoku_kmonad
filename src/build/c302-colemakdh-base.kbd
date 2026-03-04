@@ -1,0 +1,47 @@
+(defcfg
+  input  (device-file "/dev/input/event2")
+  output (uinput-sink "C302C KMonad")
+  fallthrough true
+  allow-cmd true
+)
+
+(defsrc
+	esc	f1	f2	f3	f4	f5	f6	f7	f8	f9	f10	f13
+	grv	1	2	3	4	5	6	7	8	9	0	-	=	bspc
+	tab	q	w	e	r	t	y	u	i	o	p	[	]	\
+	lmet	a	s	d	f	g	h	j	k	l	;	'	ret
+	lsft	z	x	c	v	b	n	m	,	.	/	rsft
+	lctl	lalt	spc	ralt	rctl	left	down	up	right
+)
+
+(defalias
+  search (tap-hold 200 esc (layer-toggle extend))
+
+  a_mod (tap-hold 200 a lmet)
+  r_mod (tap-hold 200 r lalt)
+  s_mod (tap-hold 200 s lctl)
+  t_mod (tap-hold 200 t lsft)
+
+  n_mod (tap-hold 200 n rsft)
+  e_mod (tap-hold 200 e rctl)
+  i_mod (tap-hold 200 i ralt)
+  o_mod (tap-hold 200 o rmet)
+)
+
+(deflayer colemak_dh
+	esc	f1	f2	f3	f4	f5	f6	f7	f8	f9	f10	f13
+	grv	1	2	3	4	5	6	7	8	9	0	-	=	bspc
+	tab	q	w	f	p	b	j	l	u	y	;	[	]	\
+	@search	@a_mod	@r_mod	@s_mod	@t_mod	g	m	@n_mod	@e_mod	@i_mod	@o_mod	'	ret
+	lsft	z	x	c	d	v	k	h	,	.	/	rsft
+	lctl	lalt	spc	ralt	rctl	left	down	up	right
+)
+
+(deflayer extend
+	_	_	_	_	_	_	_	_	_	_	_	_	_
+	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+	_	_	_	_	_	_	tab	bspc	~	_	_	_	_	_
+	_	_	_	tab	_	ret	left	down	up	right	_	_
+	_	_	_	_	_	_	_	home	pgdn	pgup	end	_
+	_	_	_	_	_	_	_	_	_
+)
