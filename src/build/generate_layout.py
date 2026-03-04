@@ -42,6 +42,16 @@ def parse_layout(text: str):
     return Layout(src, layers)
 
 
+def apply_miryoku(miryoku: str, layout: Layout, base_layer: str | None = None):
+    '''Apply miryoku to an existing layout.
+    Defsrc is copied as-is.
+    Miryoku is applied to the given base_layer (with char-to-char mappings).
+    Any other layers in the original layout will be discarded.
+    '''
+
+    raise NotImplementedError()
+
+
 def main():
     miryoku_str = Path('miryoku_kmonad.kbd').read_text()
     c302_str = Path('c302-colemakdh-base.kbd').read_text()
