@@ -30,7 +30,7 @@ def parse_layout(text: str):
         elif g.startswith('(defalias'):
             pass
         elif g.startswith('(defsrc'):
-            src = parse_keys(g, '\t')
+            src = parse_keys(g, ' ')
         elif g.startswith('(deflayer'):
             name = g.split('\n')[0].split(' ')[1]
             layer = parse_keys(g, '\t')
@@ -43,13 +43,22 @@ def parse_layout(text: str):
 
 
 def main():
-    text = Path('miryoku_kmonad.kbd').read_text()
-    text = Path('c302-colemakdh-base.kbd').read_text()
-    layout = parse_layout(text)
+    miryoku_str = Path('miryoku_kmonad.kbd').read_text()
+    c302_str = Path('c302-colemakdh-base.kbd').read_text()
 
-    print('Src:', layout.src)
+    miryoku = parse_layout(miryoku_str)
+    c302 = parse_layout(c302_str)
+
+    print('\033[93m==== Miryoku ====\033[0m\n')
+    print('Src:', miryoku.src)
     print()
-    print('Layers:', list(layout.layers.keys()))
+    print('Layers:', list(miryoku.layers.keys()))
+    print()
+
+    print('\033[93m==== C302 ====\033[0m\n')
+    print('Src:', c302.src)
+    print()
+    print('Layers:', list(c302.layers.keys()))
 
 
 if __name__ == '__main__':
