@@ -5,22 +5,28 @@ from pathlib import Path
 
 @dataclass
 class Layout:
-    src: list[list[str]]
-    layers: dict[str, list[list[str]]]
+    src: list[str]
+    positions: list[tuple[int, int]]
+    layers: dict[str, list[str]]
 
 
-def parse_keys(g: str, delim: str) -> list[list[str]]:
-    rows = []
+def parse_keys(g: str, delim: str):
+    keys = []
+    positions = []
+    row = 0
     for line in g.split('\n'):
         if line.startswith('(def') or line == ')':
             continue
         fields = line.strip().split(delim)
-        rows.append(fields)
-    return rows
+        keys += fields
+        positions += [(row, c) for c in range(len(fields))]
+        row += 1
+    return keys, positions
 
 
 def parse_layout(text: str):
-    src = None
+    src = []
+    positions = []
     layers = {}
 
     for g in re.findall(r'\n\(def.*?\n\)', text, re.DOTALL):
@@ -30,16 +36,27 @@ def parse_layout(text: str):
         elif g.startswith('(defalias'):
             pass
         elif g.startswith('(defsrc'):
-            src = parse_keys(g, ' ')
+            src, positions = parse_keys(g, ' ')
         elif g.startswith('(deflayer'):
             name = g.split('\n')[0].split(' ')[1]
-            layer = parse_keys(g, '\t')
+            layer, positions = parse_keys(g, '\t')
             layers[name] = layer
         else:
             raise ValueError('unknown pattern:', repr(g))
 
     assert src
-    return Layout(src, layers)
+    assert positions
+    return Layout(src, positions, layers)
+
+
+def apply_miryoku(miryoku: str, layout: Layout, base_layer: str | None = None):
+    '''Apply miryoku to an existing layout.
+    Defsrc is copied as-is.
+    Miryoku is applied to the given base_layer (with char-to-char mappings).
+    Any other layers in the original layout will be discarded.
+    '''
+
+    raise NotImplementedError()
 
 
 def apply_miryoku(miryoku: str, layout: Layout, base_layer: str | None = None):
@@ -62,11 +79,15 @@ def main():
     print('\033[93m==== Miryoku ====\033[0m\n')
     print('Src:', miryoku.src)
     print()
+    print(miryoku.positions)
+    print()
     print('Layers:', list(miryoku.layers.keys()))
     print()
 
     print('\033[93m==== C302 ====\033[0m\n')
     print('Src:', c302.src)
+    print()
+    print(miryoku.positions)
     print()
     print('Layers:', list(c302.layers.keys()))
 
