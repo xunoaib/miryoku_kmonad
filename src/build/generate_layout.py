@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -39,7 +40,7 @@ def parse_layout(text: str):
             src, positions = parse_keys(g, ' ')
         elif g.startswith('(deflayer'):
             name = g.split('\n')[0].split(' ')[1]
-            layer, positions = parse_keys(g, '\t')
+            layer, _positions = parse_keys(g, '\t')
             layers[name] = layer
         else:
             raise ValueError('unknown pattern:', repr(g))
@@ -49,14 +50,32 @@ def parse_layout(text: str):
     return Layout(src, positions, layers)
 
 
-def apply_miryoku(miryoku: str, layout: Layout, base_layer: str | None = None):
+def apply_miryoku(miryoku: Layout, layout: Layout):
     '''Apply miryoku to an existing layout.
     Defsrc is copied as-is.
     Miryoku is applied to the given base_layer (with char-to-char mappings).
     Any other layers in the original layout will be discarded.
     '''
 
-    raise NotImplementedError()
+    mkey_positions = {
+        s: (i, p)
+        for i, (s, p) in enumerate(zip(miryoku.src, miryoku.positions))
+    }
+
+    layers = {layer: ['❌'] * len(layout.positions) for layer in miryoku.layers}
+
+    for srcpos, key in zip(layout.positions, layout.src):
+        lidx = layout.positions.index(srcpos)
+        if res := mkey_positions.get(key):
+            midx, _mpos = res
+            for layer, mkeys in miryoku.layers.items():
+                layers[layer][lidx] = mkeys[midx]
+
+    for l, maps in layers.items():
+        print()
+        print(f'>>>> {l}\n')
+        print()
+        print(maps)
 
 
 def main():
@@ -77,9 +96,12 @@ def main():
     print('\033[93m==== C302 ====\033[0m\n')
     print('Src:', c302.src)
     print()
-    print(miryoku.positions)
+    print(c302.positions)
     print()
     print('Layers:', list(c302.layers.keys()))
+
+    print('-' * 30)
+    apply_miryoku(miryoku, c302)
 
 
 if __name__ == '__main__':
