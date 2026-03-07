@@ -162,15 +162,13 @@ def generate_kbd(layout: Layout):
 )\n\n'''
     )
 
-    src = ' '.join(k.raw for k in layout.src)
-    buf.write(f'(defsrc\n{src}\n)\n\n')
+    matrix = keys_to_matrix(layout.positions, layout.src)
+    maps = '\n'.join('\t'.join(k.raw for k in row) for row in matrix)
+    buf.write(f'(defsrc\n{maps}\n)\n\n')
 
     for layer, keys in layout.layers.items():
-
-        maps = '\t'.join(k.raw for k in keys)
-
-        maps = '\n'.join('\t')
-
+        matrix = keys_to_matrix(layout.positions, keys)
+        maps = '\n'.join('\t'.join(k.raw for k in row) for row in matrix)
         buf.write(f'(deflayer {layer}\n{maps}\n)\n\n')
 
     return buf.getvalue()
@@ -225,11 +223,9 @@ def main():
     # display(final.positions, final.layers['U_BASE'])
     display(final.positions, final.layers['U_BASE'], final.src)
 
-    print('-' * 30)
-    # out = generate_kbd(final)
-    # print(out)
-
-    __import__('pprint').pprint(keys_to_matrix(final.positions, final.src))
+    print('KMonad Config:\n')
+    out = generate_kbd(final)
+    print(out)
 
 
 if __name__ == '__main__':
