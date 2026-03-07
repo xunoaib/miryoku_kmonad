@@ -103,15 +103,14 @@ def main():
     miryoku = parse_layout(miryoku_str)
     c302 = parse_layout(c302_str)
 
-    display(c302)
-    exit()
-
-    miryoku.src = cast(
-        list[str], (
-            (row1 := ('1 2 3 4 5' + '7 8 9 0 -').split()) +
-            (row2 := ('q w e r t' + 'u i o p [').split()) +
-            (row3 := ('a s d f g' + "j k l ; '").split()) +
-            (__thumbs := ('c v b' + 'n m ,').split())
+    miryoku.src = list(
+        ''.join(
+            (
+                '1 2 3 4 5' + '7 8 9 0 -',
+                'q w e r t' + 'u i o p [',
+                'a s d f g' + "j k l ; '",
+                'c v b' + 'n m ,',
+            )
         )
     )
 
