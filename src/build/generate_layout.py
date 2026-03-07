@@ -120,18 +120,17 @@ def display(positions: list[tuple[int, int]], *keys_list: list[Key]):
             if key.raw not in ('', '_'):
                 d[pos] = key
 
-    cur_row = 0
-    for (r, c), key in sorted(d.items()):
-        if r != cur_row:
-            print()
-            cur_row = r
-        s = (key.get_tap_key() or '_').ljust(6)
-        if key.is_expression:
-            s = f'\033[93m{s}\033[0m'
-        else:
-            s = f'\033[92m{s}\033[0m'
-        print(f'{s} ', end='')
+    keys = list(d.values())
 
+    for row in keys_to_matrix(positions, keys):
+        for key in row:
+            s = (key.get_tap_key() or '_').ljust(6)
+            if key.is_expression:
+                s = f'\033[93m{s}\033[0m'
+            else:
+                s = f'\033[92m{s}\033[0m'
+            print(f'{s} ', end='')
+        print()
     print()
 
 
@@ -227,8 +226,8 @@ def main():
     display(final.positions, final.layers['U_BASE'], final.src)
 
     print('-' * 30)
-    out = generate_kbd(final)
-    print(out)
+    # out = generate_kbd(final)
+    # print(out)
 
     __import__('pprint').pprint(keys_to_matrix(final.positions, final.src))
 
