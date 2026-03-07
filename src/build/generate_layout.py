@@ -83,12 +83,28 @@ def apply_miryoku(miryoku: Layout, layout: Layout):
         print(maps)
 
 
+def display(layout: Layout):
+    d = {pos: key for pos, key in zip(layout.positions, layout.src)}
+
+    cur_row = 0
+    for (r, c), key in sorted(d.items()):
+        if r != cur_row:
+            print()
+            cur_row = r
+        print(f'{key.ljust(4)} ', end='')
+
+    print()
+
+
 def main():
     miryoku_str = Path('miryoku_kmonad.kbd').read_text()
     c302_str = Path('c302-colemakdh-base.kbd').read_text()
 
     miryoku = parse_layout(miryoku_str)
     c302 = parse_layout(c302_str)
+
+    display(c302)
+    exit()
 
     miryoku.src = cast(
         list[str], (
