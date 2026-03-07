@@ -227,6 +227,13 @@ def main():
     out = generate_kbd(final)
     print(out)
 
+    outfile = Path('c302-colemakdh-miryoku.kbd')
+
+    if input(f'Write to {outfile}? [Y/n] ').lower() in ('', 'y'):
+        with open(outfile, 'w') as f:
+            f.write(out)
+        print('Wrote', outfile)
+
 
 if __name__ == '__main__':
     main()
