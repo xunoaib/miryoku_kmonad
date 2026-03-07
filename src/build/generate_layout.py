@@ -135,6 +135,23 @@ def display(positions: list[tuple[int, int]], *keys_list: list[Key]):
     print()
 
 
+def keys_to_matrix(positions: list[tuple[int, int]], keys: list[Key]):
+    d = {pos: key for pos, key in zip(positions, keys)}
+
+    matrix = []
+    cur_row: int | None = None
+    for (r, _c), key in sorted(d.items()):
+        if r != cur_row:
+            cur_row = r
+            matrix.append([])
+        matrix[-1].append(key)
+
+    if matrix and not matrix[-1]:
+        matrix.pop()
+
+    return matrix
+
+
 def generate_kbd(layout: Layout):
     buf = StringIO()
 
@@ -150,7 +167,11 @@ def generate_kbd(layout: Layout):
     buf.write(f'(defsrc\n{src}\n)\n\n')
 
     for layer, keys in layout.layers.items():
+
         maps = '\t'.join(k.raw for k in keys)
+
+        maps = '\n'.join('\t')
+
         buf.write(f'(deflayer {layer}\n{maps}\n)\n\n')
 
     return buf.getvalue()
@@ -208,6 +229,8 @@ def main():
     print('-' * 30)
     out = generate_kbd(final)
     print(out)
+
+    __import__('pprint').pprint(keys_to_matrix(final.positions, final.src))
 
 
 if __name__ == '__main__':
