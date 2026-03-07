@@ -1,4 +1,5 @@
 import re
+import sys
 from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
@@ -230,10 +231,11 @@ def main():
 
     outfile = Path('c302-colemakdh-miryoku.kbd')
 
-    if input(f'Write to {outfile}? [Y/n] ').lower() in ('', 'y'):
-        with open(outfile, 'w') as f:
-            f.write(out)
-        print('Wrote', outfile)
+    if '-w' in sys.argv:
+        if input(f'Write to {outfile}? [Y/n] ').lower() in ('', 'y'):
+            with open(outfile, 'w') as f:
+                f.write(out)
+            print('Wrote', outfile)
 
 
 if __name__ == '__main__':
