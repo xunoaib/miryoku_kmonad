@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import override
 
 
-@dataclass
+@dataclass(frozen=True)
 class Key:
     raw: str
 
@@ -77,7 +77,7 @@ def parse_layout(text: str):
     return Layout(src, positions, layers)
 
 
-def apply_miryoku(miryoku: Layout, layout: Layout):
+def apply_miryoku(miryoku: Layout, layout: Layout, default_key: Key):
     '''Apply miryoku to an existing layout.
     Defsrc is copied as-is.
     Miryoku is applied to the given base_layer (with char-to-char mappings).
@@ -95,7 +95,7 @@ def apply_miryoku(miryoku: Layout, layout: Layout):
     }
 
     layers = {
-        layer: [Key('_') for _ in range(len(layout.positions))]
+        layer: [default_key] * len(layout.positions)
         for layer in miryoku.layers
     }
 
@@ -214,7 +214,8 @@ def main():
     # print()
     # print('Layers:', list(c302.layers.keys()))
 
-    final = apply_miryoku(miryoku, c302)
+    final = apply_miryoku(miryoku, c302, Key('_'))
+    # final = apply_miryoku(miryoku, c302, Key('XX'))
 
     print('Original Miryoku:\n')
     display(miryoku.positions, miryoku.layers['U_BASE'])
