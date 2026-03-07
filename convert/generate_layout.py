@@ -1,8 +1,8 @@
-from typing import override
-from io import StringIO
 import re
 from dataclasses import dataclass
+from io import StringIO
 from pathlib import Path
+from typing import override
 
 
 @dataclass
@@ -187,7 +187,7 @@ def main():
                 (
                     '1 2 3 4 5 ' + '8 9 0 - =',
                     'q w e r t ' + 'u i o p [',
-                    'a s d f g ' + "j k l ; '",
+                    'a s d f g ' + "k l ; ' ent",
                     'c v b ' + 'n m ,',
                 )
             ).split()
