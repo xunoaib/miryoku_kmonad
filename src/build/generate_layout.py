@@ -1,7 +1,33 @@
-from typing import cast
+from typing import override
 import re
 from dataclasses import dataclass
 from pathlib import Path
+
+
+@dataclass
+class Key:
+    raw: str
+
+    @property
+    def is_expression(self):
+        return self.raw.startswith('(') and self.raw.endswith(')')
+
+    @property
+    def type(self):
+        if not self.is_expression:
+            return 'simple'
+        match = re.search(r'^\(\s*([^\s\)]+)', self.raw)
+        return match.group(1) if match else 'unknown'
+
+    def get_tap_key(self):
+        if 'tap-hold' in self.type:
+            parts = self.raw.strip('()').split()
+            return parts[2] if len(parts) >= 3 else None
+        return self.raw if not self.is_expression else None
+
+    @override
+    def __repr__(self):
+        return self.raw
 
 
 @dataclass
