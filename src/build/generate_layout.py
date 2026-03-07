@@ -1,4 +1,5 @@
 from typing import override
+from io import StringIO
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -94,7 +95,7 @@ def apply_miryoku(miryoku: Layout, layout: Layout):
     }
 
     layers = {
-        layer: [Key('') for _ in range(len(layout.positions))]
+        layer: [Key('_') for _ in range(len(layout.positions))]
         for layer in miryoku.layers
     }
 
@@ -104,12 +105,6 @@ def apply_miryoku(miryoku: Layout, layout: Layout):
             midx, _mpos = res
             for layer, mkeys in miryoku.layers.items():
                 layers[layer][lidx] = mkeys[midx]
-
-    for l, maps in layers.items():
-        print()
-        print(f'>>>> {l}\n')
-        print()
-        print(maps)
 
     return Layout(layout.src, layout.positions, layers)
 
@@ -122,7 +117,7 @@ def display(positions: list[tuple[int, int]], *keys_list: list[Key]):
     # fill in any fallback keys
     for keys in keys_list[::-1]:
         for pos, key in zip(positions, keys):
-            if key.raw:
+            if key.raw not in ('', '_'):
                 d[pos] = key
 
     cur_row = 0
@@ -138,6 +133,27 @@ def display(positions: list[tuple[int, int]], *keys_list: list[Key]):
         print(f'{s} ', end='')
 
     print()
+
+
+def generate_kbd(layout: Layout):
+    buf = StringIO()
+
+    buf.write(
+        '''(defcfg
+  input (device-file "keyboard")
+  output (uinput-sink "Custom Miryoku KMonad output")
+  fallthrough false
+)\n\n'''
+    )
+
+    src = ' '.join(k.raw for k in layout.src)
+    buf.write(f'(defsrc\n{src}\n)\n\n')
+
+    for layer, keys in layout.layers.items():
+        maps = '\t'.join(k.raw for k in keys)
+        buf.write(f'(deflayer {layer}\n{maps}\n)\n\n')
+
+    return buf.getvalue()
 
 
 def main():
@@ -160,38 +176,38 @@ def main():
         )
     )
 
-    print(new_src)
-
     assert len(new_src) == len(
         miryoku.src
     ), f'{len(new_src)} != {len(miryoku.src)}'
+
     miryoku.src = new_src
 
-    print('\033[93m==== Miryoku ====\033[0m\n')
-    print('Src:', miryoku.src)
+    # print('\033[93m==== Miryoku ====\033[0m\n')
+    # print('Src:', miryoku.src)
     # print()
     # print(miryoku.positions)
     # print()
     # print('Layers:', list(miryoku.layers.keys()))
 
-    print('\n\033[93m==== C302 ====\033[0m\n')
-    print('Src:', c302.src)
+    # print('\n\033[93m==== C302 ====\033[0m\n')
+    # print('Src:', c302.src)
     # print()
     # print(c302.positions)
     # print()
     # print('Layers:', list(c302.layers.keys()))
 
-    print('-' * 30)
     final = apply_miryoku(miryoku, c302)
 
-    print()
-    # display(final.src, final.positions)
     print('Original Miryoku:\n')
     display(miryoku.positions, miryoku.layers['U_BASE'])
-    print()
-    print('Adapted Miryoku:\n')
-    # display(final.positions, final.layers['U_BASE'], final.src)
-    display(final.positions, final.layers['U_BASE'])
+
+    print('\nAdapted Miryoku:\n')
+    # display(final.positions, final.layers['U_BASE'])
+    display(final.positions, final.layers['U_BASE'], final.src)
+
+    print('-' * 30)
+    out = generate_kbd(final)
+    print(out)
 
 
 if __name__ == '__main__':
