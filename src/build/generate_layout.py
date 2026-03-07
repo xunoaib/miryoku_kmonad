@@ -151,7 +151,7 @@ def main():
         map(
             Key, ' '.join(
                 (
-                    '1 2 3 4 5 ' + '7 8 9 0 -',
+                    '1 2 3 4 5 ' + '8 9 0 - =',
                     'q w e r t ' + 'u i o p [',
                     'a s d f g ' + "j k l ; '",
                     'c v b ' + 'n m ,',
