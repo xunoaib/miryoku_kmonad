@@ -1,5 +1,5 @@
+from typing import cast
 import re
-from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -55,6 +55,11 @@ def apply_miryoku(miryoku: Layout, layout: Layout):
     Defsrc is copied as-is.
     Miryoku is applied to the given base_layer (with char-to-char mappings).
     Any other layers in the original layout will be discarded.
+
+    Note: Primary key mappings are controlled by modifying the "miryoku" src
+    key layout. For example, to map 'a' on miryoku's U_BASE layer (aka '2' on
+    miryoku's src layer) to 'q' on the target layout's SRC layer, change '2' to
+    'q' in miryoku's SRC layer.
     '''
 
     mkey_positions = {
@@ -84,6 +89,15 @@ def main():
 
     miryoku = parse_layout(miryoku_str)
     c302 = parse_layout(c302_str)
+
+    miryoku.src = cast(
+        list[str], (
+            (row1 := ('1 2 3 4 5' + '7 8 9 0 -').split()) +
+            (row2 := ('q w e r t' + 'u i o p [').split()) +
+            (row3 := ('a s d f g' + "j k l ; '").split()) +
+            (__thumbs := ('c v b' + 'n m ,').split())
+        )
+    )
 
     print('\033[93m==== Miryoku ====\033[0m\n')
     print('Src:', miryoku.src)
