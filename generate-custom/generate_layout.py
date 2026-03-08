@@ -1,14 +1,3 @@
-r'''
-Example Usage:
-
-python generate_layout.py \
-    -m miryoku_kmonad.kbd \
-    -l c302-base.kbd \
-    -p c302-mapping.txt \
-    -df /dev/input/event2 \
-    -o c302-miryoku-output.kbd
-'''
-
 import argparse
 import re
 import sys
