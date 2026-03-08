@@ -1,9 +1,11 @@
+import argparse
 import re
-import sys
 from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
 from typing import override
+
+DEFAULT_DEVICE_FILE = '/dev/input/event2'  # NOTE: change as needed
 
 
 @dataclass(frozen=True)
@@ -152,13 +154,12 @@ def keys_to_matrix(positions: list[tuple[int, int]], keys: list[Key]):
     return matrix
 
 
-def generate_kbd(layout: Layout):
+def generate_kbd(layout: Layout, device_file: str):
     buf = StringIO()
 
     buf.write(
-        '''(defcfg
-  ;;input (device-file "keyboard")
-  input  (device-file "/dev/input/event2")
+        f'''(defcfg
+  input  (device-file "{device_file}")
   output (uinput-sink "Custom Miryoku KMonad output")
   fallthrough false
 )\n\n'''
@@ -177,11 +178,43 @@ def generate_kbd(layout: Layout):
 
 
 def main():
-    miryoku_str = Path('miryoku_kmonad.kbd').read_text()
-    c302_str = Path('c302-colemakdh-base.kbd').read_text()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-m',
+        '--miryoku',
+        help='Path to miryoku.kdb',
+        default='miryoku_kmonad.kbd'
+    )
+    parser.add_argument(
+        '-l',
+        '--layout',
+        help='Path to keyboard layout.kbd to apply miryoku to',
+        default='c302-colemakdh-base.kbd'
+    )
+    parser.add_argument(
+        '-o',
+        '--outfile',
+        help='Path to output.kbd',
+    )
+    parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument(
+        '-df',
+        '--device-file',
+        default=DEFAULT_DEVICE_FILE,
+        help='Device file for keyboard'
+    )
+    args = parser.parse_args()
 
-    miryoku = parse_layout(miryoku_str)
-    c302 = parse_layout(c302_str)
+    print('-' * 30)
+    print('Miryoku will be applied to the target layout.')
+    print()
+    print('  Miryoku Def:', args.miryoku)
+    print('Target Layout:', args.layout)
+    print('  Output Path:', args.outfile or '(stdout)')
+    print('-' * 30)
+
+    miryoku = parse_layout(Path(args.miryoku).read_text())
+    layout = parse_layout(Path(args.layout).read_text())
 
     new_src = list(
         map(
@@ -202,41 +235,49 @@ def main():
 
     miryoku.src = new_src
 
-    # print('\033[93m==== Miryoku ====\033[0m\n')
-    # print('Src:', miryoku.src)
-    # print()
-    # print(miryoku.positions)
-    # print()
-    # print('Layers:', list(miryoku.layers.keys()))
+    if args.debug:
+        print('\033[93m==== Miryoku ====\033[0m\n')
+        print('Src:', miryoku.src)
+        print()
+        print(miryoku.positions)
+        print()
+        print('Layers:', list(miryoku.layers.keys()))
 
-    # print('\n\033[93m==== C302 ====\033[0m\n')
-    # print('Src:', c302.src)
-    # print()
-    # print(c302.positions)
-    # print()
-    # print('Layers:', list(c302.layers.keys()))
+        print('\n\033[93m==== Target Layout ====\033[0m\n')
+        print('Src:', layout.src)
+        print()
+        print(layout.positions)
+        print()
+        print('Layers:', list(layout.layers.keys()))
 
-    final = apply_miryoku(miryoku, c302, Key('_'))
-    # final = apply_miryoku(miryoku, c302, Key('XX'))
+    final = apply_miryoku(miryoku, layout, Key('_'))
+    # final = apply_miryoku(miryoku, layout, Key('XX'))
 
-    print('Original Miryoku:\n')
-    display(miryoku.positions, miryoku.layers['U_BASE'])
+    if args.debug:
+        print('Original Miryoku:\n')
+        display(miryoku.positions, miryoku.layers['U_BASE'])
 
-    print('\nAdapted Miryoku:\n')
-    # display(final.positions, final.layers['U_BASE'])
-    display(final.positions, final.layers['U_BASE'], final.src)
+        print('\nAdapted Miryoku:\n')
+        # display(final.positions, final.layers['U_BASE'])
+        display(final.positions, final.layers['U_BASE'], final.src)
 
-    print('KMonad Config:\n')
-    out = generate_kbd(final)
-    print(out)
+    out = generate_kbd(final, args.device_file)
+    out = '\n'.join(
+        (
+            ';; === Generated Miryoku Layout ===',
+            ';; Reference Layout: ' + Path(args.layout).name + '\n',
+            out,
+        )
+    ).strip()
 
-    outfile = Path('c302-colemakdh-miryoku.kbd')
+    if args.outfile:
+        outfile = Path(args.outfile)
+        with open(outfile, 'w') as f:
+            f.write(out)
+        print('Wrote layout to', outfile)
 
-    if '-w' in sys.argv:
-        if input(f'Write to {outfile}? [Y/n] ').lower() in ('', 'y'):
-            with open(outfile, 'w') as f:
-                f.write(out)
-            print('Wrote', outfile)
+    else:
+        print(out)
 
 
 if __name__ == '__main__':
