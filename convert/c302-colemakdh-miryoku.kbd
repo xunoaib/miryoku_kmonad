@@ -1,5 +1,7 @@
+;; === Generated Miryoku Layout ===
+;; Reference Layout: c302-colemakdh-base.kbd
+
 (defcfg
-  ;;input (device-file "keyboard")
   input  (device-file "/dev/input/event2")
   output (uinput-sink "Custom Miryoku KMonad output")
   fallthrough false
@@ -103,4 +105,3 @@ _	f10	f1	f2	f3	pause	_	XX	(multi-tap 200 XX (layer-switch U_FUN))	(multi-tap 200
 _	_	_	comp	spc	tab	XX	XX	XX	_	_	_
 _	_	_	_	_	_	_	_	_
 )
-
