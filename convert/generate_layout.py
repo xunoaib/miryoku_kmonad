@@ -193,7 +193,13 @@ def get_parser():
         '-l',
         '--layout',
         help='Path to keyboard layout.kbd to apply miryoku to',
-        default='c302-colemakdh-base.kbd'
+        default='c302-base-layout.kbd'
+    )
+    parser.add_argument(
+        '-p',
+        '--mapping',
+        help='Keys in target layout to map Miryoku to',
+        default='c302-mapping.txt'
     )
     parser.add_argument(
         '-o',
@@ -217,32 +223,25 @@ def main():
     log('-' * 30)
     log('Miryoku will be applied to the target layout.')
     log()
-    log('  Miryoku Def:', args.miryoku)
-    log('Target Layout:', args.layout)
+    log('Miryoku Reference KBD:', args.miryoku)
+    log('    Custom Layout KBD:', args.layout)
+    log('Custom Layout Mapping:', args.mapping)
+    log()
     log('  Output Path:', args.outfile or '(stdout)')
     log('-' * 30)
 
     miryoku = parse_layout(Path(args.miryoku).read_text())
     layout = parse_layout(Path(args.layout).read_text())
 
-    new_src = list(
-        map(
-            Key, ' '.join(
-                (
-                    '1 2 3 4 5 ' + '7 8 9 0 -',
-                    'q w e r t ' + 'u i o p [',
-                    'a s d f g ' + "j k l ; '",
-                    'c v b ' + 'n m ,',
-                )
-            ).split()
+    mapping_str = Path(args.mapping).read_text()
+    src = list(map(Key, mapping_str.split()))
+
+    if len(src) != len(miryoku.src):
+        raise ValueError(
+            f'Source map length does not match Miryoku keymap length: {len(src)} != {len(miryoku.src)}'
         )
-    )
 
-    assert len(new_src) == len(
-        miryoku.src
-    ), f'{len(new_src)} != {len(miryoku.src)}'
-
-    miryoku.src = new_src
+    miryoku.src = src
 
     if args.debug:
         log('\033[93m==== Miryoku ====\033[0m\n')
