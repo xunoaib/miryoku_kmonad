@@ -1,11 +1,15 @@
 import argparse
 import re
+import sys
 from dataclasses import dataclass
+from functools import partial
 from io import StringIO
 from pathlib import Path
 from typing import override
 
 DEFAULT_DEVICE_FILE = '/dev/input/event2'  # NOTE: change as needed
+
+log = partial(print, file=sys.stderr)
 
 
 @dataclass(frozen=True)
@@ -132,9 +136,9 @@ def display(positions: list[tuple[int, int]], *keys_list: list[Key]):
                 s = f'\033[93m{s}\033[0m'
             else:
                 s = f'\033[92m{s}\033[0m'
-            print(f'{s} ', end='')
-        print()
-    print()
+            log(f'{s} ', end='')
+        log()
+    log()
 
 
 def keys_to_matrix(positions: list[tuple[int, int]], keys: list[Key]):
@@ -177,7 +181,7 @@ def generate_kbd(layout: Layout, device_file: str):
     return buf.getvalue()
 
 
-def main():
+def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '-m',
@@ -203,15 +207,20 @@ def main():
         default=DEFAULT_DEVICE_FILE,
         help='Device file for keyboard'
     )
+    return parser
+
+
+def main():
+    parser = get_parser()
     args = parser.parse_args()
 
-    print('-' * 30)
-    print('Miryoku will be applied to the target layout.')
-    print()
-    print('  Miryoku Def:', args.miryoku)
-    print('Target Layout:', args.layout)
-    print('  Output Path:', args.outfile or '(stdout)')
-    print('-' * 30)
+    log('-' * 30)
+    log('Miryoku will be applied to the target layout.')
+    log()
+    log('  Miryoku Def:', args.miryoku)
+    log('Target Layout:', args.layout)
+    log('  Output Path:', args.outfile or '(stdout)')
+    log('-' * 30)
 
     miryoku = parse_layout(Path(args.miryoku).read_text())
     layout = parse_layout(Path(args.layout).read_text())
@@ -236,28 +245,28 @@ def main():
     miryoku.src = new_src
 
     if args.debug:
-        print('\033[93m==== Miryoku ====\033[0m\n')
-        print('Src:', miryoku.src)
-        print()
-        print(miryoku.positions)
-        print()
-        print('Layers:', list(miryoku.layers.keys()))
+        log('\033[93m==== Miryoku ====\033[0m\n')
+        log('Src:', miryoku.src)
+        log()
+        log(miryoku.positions)
+        log()
+        log('Layers:', list(miryoku.layers.keys()))
 
-        print('\n\033[93m==== Target Layout ====\033[0m\n')
-        print('Src:', layout.src)
-        print()
-        print(layout.positions)
-        print()
-        print('Layers:', list(layout.layers.keys()))
+        log('\n\033[93m==== Target Layout ====\033[0m\n')
+        log('Src:', layout.src)
+        log()
+        log(layout.positions)
+        log()
+        log('Layers:', list(layout.layers.keys()))
 
     final = apply_miryoku(miryoku, layout, Key('_'))
     # final = apply_miryoku(miryoku, layout, Key('XX'))
 
     if args.debug:
-        print('Original Miryoku:\n')
+        log('Original Miryoku:\n')
         display(miryoku.positions, miryoku.layers['U_BASE'])
 
-        print('\nAdapted Miryoku:\n')
+        log('\nAdapted Miryoku:\n')
         # display(final.positions, final.layers['U_BASE'])
         display(final.positions, final.layers['U_BASE'], final.src)
 
@@ -274,7 +283,7 @@ def main():
         outfile = Path(args.outfile)
         with open(outfile, 'w') as f:
             f.write(out)
-        print('Wrote layout to', outfile)
+        log('Wrote layout to', outfile)
 
     else:
         print(out)
