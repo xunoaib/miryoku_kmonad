@@ -1,3 +1,14 @@
+r'''
+Example Usage:
+
+python generate_layout.py \
+    -m miryoku_kmonad.kbd \
+    -l c302-base.kbd \
+    -p c302-mapping.txt \
+    -df /dev/input/event2 \
+    -o c302-miryoku-output.kbd
+'''
+
 import argparse
 import re
 import sys
@@ -8,6 +19,10 @@ from pathlib import Path
 from typing import override
 
 DEFAULT_DEVICE_FILE = '/dev/input/event2'  # NOTE: change as needed
+
+DEFAULT_LAYOUT = 'c302-base.kbd'
+DEFAULT_MAPPING = 'c302-mapping.txt'
+DEFAULT_MIRYOKU = 'miryoku_kmonad.kbd'
 
 log = partial(print, file=sys.stderr)
 
@@ -184,22 +199,25 @@ def generate_kbd(layout: Layout, device_file: str):
 def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-m',
-        '--miryoku',
-        help='Path to miryoku.kdb',
-        default='miryoku_kmonad.kbd'
+        '-m', '--miryoku', help='Path to miryoku.kdb', default=DEFAULT_MIRYOKU
     )
     parser.add_argument(
         '-l',
         '--layout',
         help='Path to keyboard layout.kbd to apply miryoku to',
-        default='c302-base-layout.kbd'
+        default=DEFAULT_LAYOUT
     )
     parser.add_argument(
         '-p',
         '--mapping',
         help='Keys in target layout to map Miryoku to',
-        default='c302-mapping.txt'
+        default=DEFAULT_MAPPING
+    )
+    parser.add_argument(
+        '-df',
+        '--device-file',
+        default=DEFAULT_DEVICE_FILE,
+        help='Device file for keyboard'
     )
     parser.add_argument(
         '-o',
@@ -207,12 +225,6 @@ def get_parser():
         help='Path to output.kbd',
     )
     parser.add_argument('-d', '--debug', action='store_true')
-    parser.add_argument(
-        '-df',
-        '--device-file',
-        default=DEFAULT_DEVICE_FILE,
-        help='Device file for keyboard'
-    )
     return parser
 
 
