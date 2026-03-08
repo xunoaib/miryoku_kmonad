@@ -1,5 +1,5 @@
 ;; === Generated Miryoku Layout ===
-;; Reference Layout: c302-colemakdh-base.kbd
+;; Reference Layout: c302-base.kbd
 
 (defcfg
   input  (device-file "/dev/input/event2")
