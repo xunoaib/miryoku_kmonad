@@ -157,7 +157,8 @@ def generate_kbd(layout: Layout):
 
     buf.write(
         '''(defcfg
-  input (device-file "keyboard")
+  ;;input (device-file "keyboard")
+  input  (device-file "/dev/input/event2")
   output (uinput-sink "Custom Miryoku KMonad output")
   fallthrough false
 )\n\n'''
@@ -186,9 +187,9 @@ def main():
         map(
             Key, ' '.join(
                 (
-                    '1 2 3 4 5 ' + '8 9 0 - =',
+                    '1 2 3 4 5 ' + '7 8 9 0 -',
                     'q w e r t ' + 'u i o p [',
-                    'a s d f g ' + "k l ; ' ent",
+                    'a s d f g ' + "j k l ; '",
                     'c v b ' + 'n m ,',
                 )
             ).split()
