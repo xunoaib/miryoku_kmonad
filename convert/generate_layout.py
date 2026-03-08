@@ -60,11 +60,12 @@ class Layout:
     layers: dict[str, list[Key]]
 
 
-def parse_keys(g: str, delim: str) -> tuple[list[Key], list[tuple[int, int]]]:
+def parse_keys(kmonad_conf: str,
+               delim: str) -> tuple[list[Key], list[tuple[int, int]]]:
     keys = []
     positions = []
     row = 0
-    for line in g.split('\n'):
+    for line in kmonad_conf.split('\n'):
         if line.startswith('(def') or line == ')':
             continue
         fields = line.strip().split(delim)
@@ -74,12 +75,12 @@ def parse_keys(g: str, delim: str) -> tuple[list[Key], list[tuple[int, int]]]:
     return keys, positions
 
 
-def parse_layout(text: str):
+def parse_layout(kmonad_conf: str):
     src = []
     positions = []
     layers = {}
 
-    for g in re.findall(r'\n\(def.*?\n\)', text, re.DOTALL):
+    for g in re.findall(r'\n\(def.*?\n\)', kmonad_conf, re.DOTALL):
         g = g.strip()
         if g.startswith('(defcfg'):
             pass
@@ -224,6 +225,12 @@ def get_parser():
         '--outfile',
         help='Path to output.kbd',
     )
+    parser.add_argument(
+        '-fb',
+        '--fallback-key',
+        default='_',
+        help='Key to use for unmapped keys in base layer (default: _)'
+    )
     parser.add_argument('-d', '--debug', action='store_true')
     return parser
 
@@ -270,8 +277,7 @@ def main():
         log()
         log('Layers:', list(layout.layers.keys()))
 
-    final = apply_miryoku(miryoku, layout, Key('_'))
-    # final = apply_miryoku(miryoku, layout, Key('XX'))
+    final = apply_miryoku(miryoku, layout, Key(args.fallback_key))
 
     if args.debug:
         log('Original Miryoku:\n')
