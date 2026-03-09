@@ -1,0 +1,107 @@
+;; === Generated Miryoku Layout ===
+;; Reference Layout: gl553vd-base.kbd
+
+(defcfg
+  input  (device-file "/dev/input/by-id/usb-ITE_Tech._Inc._ITE_Device_8910_-event-kbd")
+  output (uinput-sink "Custom Miryoku KMonad output")
+  fallthrough false
+)
+
+(defsrc
+esc	f1	f2	f3	f4	f5	f6	f7	f8	f9	f10	f11	f12	del	home	pause	prnt
+grv	1	2	3	4	5	6	7	8	9	0	-	=	bspc	nlck	kp/	kp*	kp-
+tab	q	w	e	r	t	y	u	i	o	p	[	]	\	kp7	kp8	kp9	kp+
+caps	a	s	d	f	g	h	j	k	l	;	'	ret	kp4	kp5	kp6
+lsft	z	x	c	v	b	n	m	,	.	/	rsft	up	kp1	kp2	kp3	kprt
+lctl	lmet	lalt	spc	ralt	comp	rctl	left	down	right	kp0	kp.
+)
+
+(deflayer U_BASE
+_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+_	q	w	f	p	b	_	j	l	u	y	'	_	_	_	_	_	_
+_	(tap-hold-next-release 200 a met)	(tap-hold-next-release 200 r alt)	(tap-hold-next-release 200 s ctl)	(tap-hold-next-release 200 t sft)	g	_	m	(tap-hold-next-release 200 n sft)	(tap-hold-next-release 200 e ctl)	(tap-hold-next-release 200 i alt)	(tap-hold-next-release 200 o met)	_	_	_	_	_	_
+_	(tap-hold-next-release 200 z (layer-toggle U_BUTTON))	(tap-hold-next-release 200 x ralt)	c	d	v	_	k	h	,	(tap-hold-next-release 200 . ralt)	(tap-hold-next-release 200 / (layer-toggle U_BUTTON))	_	_	_	_
+_	_	_	(tap-hold-next-release 200 esc (layer-toggle U_MEDIA))	(tap-hold-next-release 200 spc (layer-toggle U_NAV))	(tap-hold-next-release 200 tab (layer-toggle U_MOUSE))	(tap-hold-next-release 200 ent (layer-toggle U_SYM))	(tap-hold-next-release 200 bspc (layer-toggle U_NUM))	(tap-hold-next-release 200 del (layer-toggle U_FUN))	_	_	_	_	_	_	_	_
+_	_	_	_	_	_	_	_	_	_	_	_
+)
+
+(deflayer U_EXTRA
+_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+_	q	w	e	r	t	_	y	u	i	o	p	_	_	_	_	_	_
+_	(tap-hold-next-release 200 a met)	(tap-hold-next-release 200 s alt)	(tap-hold-next-release 200 d ctl)	(tap-hold-next-release 200 f sft)	g	_	h	(tap-hold-next-release 200 j sft)	(tap-hold-next-release 200 k ctl)	(tap-hold-next-release 200 l alt)	(tap-hold-next-release 200 ' met)	_	_	_	_	_	_
+_	(tap-hold-next-release 200 z (layer-toggle U_BUTTON))	(tap-hold-next-release 200 x ralt)	c	v	b	_	n	m	,	(tap-hold-next-release 200 . ralt)	(tap-hold-next-release 200 / (layer-toggle U_BUTTON))	_	_	_	_
+_	_	_	(tap-hold-next-release 200 esc (layer-toggle U_MEDIA))	(tap-hold-next-release 200 spc (layer-toggle U_NAV))	(tap-hold-next-release 200 tab (layer-toggle U_MOUSE))	(tap-hold-next-release 200 ent (layer-toggle U_SYM))	(tap-hold-next-release 200 bspc (layer-toggle U_NUM))	(tap-hold-next-release 200 del (layer-toggle U_FUN))	_	_	_	_	_	_	_	_
+_	_	_	_	_	_	_	_	_	_	_	_
+)
+
+(deflayer U_TAP
+_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+_	q	w	f	p	b	_	j	l	u	y	'	_	_	_	_	_	_
+_	a	r	s	t	g	_	m	n	e	i	o	_	_	_	_	_	_
+_	z	x	c	d	v	_	k	h	,	.	/	_	_	_	_
+_	_	_	esc	spc	tab	ent	bspc	del	_	_	_	_	_	_	_	_
+_	_	_	_	_	_	_	_	_	_	_	_
+)
+
+(deflayer U_BUTTON
+_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+_	undo	S-del	C-ins	S-ins	again	_	again	S-ins	C-ins	S-del	undo	_	_	_	_	_	_
+_	met	alt	ctl	sft	XX	_	XX	sft	ctl	alt	met	_	_	_	_	_	_
+_	undo	S-del	C-ins	S-ins	again	_	again	S-ins	C-ins	S-del	undo	_	_	_	_
+_	_	_	#(kp* kp5)	#(kp/ kp5)	#(kp- kp5)	#(kp- kp5)	#(kp/ kp5)	#(kp* kp5)	_	_	_	_	_	_	_	_
+_	_	_	_	_	_	_	_	_	_	_	_
+)
+
+(deflayer U_NAV
+_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+_	XX	(multi-tap 200 XX (layer-switch U_TAP))	(multi-tap 200 XX (layer-switch U_EXTRA))	(multi-tap 200 XX (layer-switch U_BASE))	XX	_	again	S-ins	C-ins	S-del	undo	_	_	_	_	_	_
+_	met	alt	ctl	sft	XX	_	caps	left	down	up	right	_	_	_	_	_	_
+_	XX	ralt	(multi-tap 200 XX (layer-switch U_NUM))	(multi-tap 200 XX (layer-switch U_NAV))	XX	_	ins	home	pgdn	pgup	end	_	_	_	_
+_	_	_	XX	XX	XX	ent	bspc	del	_	_	_	_	_	_	_	_
+_	_	_	_	_	_	_	_	_	_	_	_
+)
+
+(deflayer U_MOUSE
+_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+_	XX	(multi-tap 200 XX (layer-switch U_TAP))	(multi-tap 200 XX (layer-switch U_EXTRA))	(multi-tap 200 XX (layer-switch U_BASE))	XX	_	again	S-ins	C-ins	S-del	undo	_	_	_	_	_	_
+_	met	alt	ctl	sft	XX	_	XX	kp4	kp2	kp8	kp6	_	_	_	_	_	_
+_	XX	ralt	(multi-tap 200 XX (layer-switch U_SYM))	(multi-tap 200 XX (layer-switch U_MOUSE))	XX	_	XX	XX	XX	XX	XX	_	_	_	_
+_	_	_	XX	XX	XX	#(kp- kp5)	#(kp/ kp5)	#(kp* kp5)	_	_	_	_	_	_	_	_
+_	_	_	_	_	_	_	_	_	_	_	_
+)
+
+(deflayer U_MEDIA
+_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+_	XX	(multi-tap 200 XX (layer-switch U_TAP))	(multi-tap 200 XX (layer-switch U_EXTRA))	(multi-tap 200 XX (layer-switch U_BASE))	XX	_	XX	XX	XX	XX	XX	_	_	_	_	_	_
+_	met	alt	ctl	sft	XX	_	XX	previoussong	vold	volu	nextsong	_	_	_	_	_	_
+_	XX	ralt	(multi-tap 200 XX (layer-switch U_FUN))	(multi-tap 200 XX (layer-switch U_MEDIA))	XX	_	XX	XX	XX	XX	XX	_	_	_	_
+_	_	_	XX	XX	XX	stopcd	playpause	mute	_	_	_	_	_	_	_	_
+_	_	_	_	_	_	_	_	_	_	_	_
+)
+
+(deflayer U_NUM
+_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+_	[	7	8	9	]	_	XX	(multi-tap 200 XX (layer-switch U_BASE))	(multi-tap 200 XX (layer-switch U_EXTRA))	(multi-tap 200 XX (layer-switch U_TAP))	XX	_	_	_	_	_	_
+_	;	4	5	6	=	_	XX	sft	ctl	alt	met	_	_	_	_	_	_
+_	`	1	2	3	\\	_	XX	(multi-tap 200 XX (layer-switch U_NUM))	(multi-tap 200 XX (layer-switch U_NAV))	ralt	XX	_	_	_	_
+_	_	_	.	0	-	XX	XX	XX	_	_	_	_	_	_	_	_
+_	_	_	_	_	_	_	_	_	_	_	_
+)
+
+(deflayer U_SYM
+_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+_	{	&	*	\(	}	_	XX	(multi-tap 200 XX (layer-switch U_BASE))	(multi-tap 200 XX (layer-switch U_EXTRA))	(multi-tap 200 XX (layer-switch U_TAP))	XX	_	_	_	_	_	_
+_	:	$	%	^	+	_	XX	sft	ctl	alt	met	_	_	_	_	_	_
+_	~	!	@	#	|	_	XX	(multi-tap 200 XX (layer-switch U_SYM))	(multi-tap 200 XX (layer-switch U_MOUSE))	ralt	XX	_	_	_	_
+_	_	_	\(	\)	\_	XX	XX	XX	_	_	_	_	_	_	_	_
+_	_	_	_	_	_	_	_	_	_	_	_
+)
+
+(deflayer U_FUN
+_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+_	f12	f7	f8	f9	sysrq	_	XX	(multi-tap 200 XX (layer-switch U_BASE))	(multi-tap 200 XX (layer-switch U_EXTRA))	(multi-tap 200 XX (layer-switch U_TAP))	XX	_	_	_	_	_	_
+_	f11	f4	f5	f6	slck	_	XX	sft	ctl	alt	met	_	_	_	_	_	_
+_	f10	f1	f2	f3	pause	_	XX	(multi-tap 200 XX (layer-switch U_FUN))	(multi-tap 200 XX (layer-switch U_MEDIA))	ralt	XX	_	_	_	_
+_	_	_	comp	spc	tab	XX	XX	XX	_	_	_	_	_	_	_	_
+_	_	_	_	_	_	_	_	_	_	_	_
+)
