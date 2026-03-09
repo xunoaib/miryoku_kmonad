@@ -163,7 +163,7 @@ def parse_layout(kmonad_conf: str):
     positions = []
     layers = {}
 
-    for g in re.findall(r'\n\(def.*?\n\)', kmonad_conf, re.DOTALL):
+    for g in re.findall(r'(?:^|\n)\(def.*?\n\)', kmonad_conf, re.DOTALL):
         g = g.strip()
         if g.startswith('(defcfg'):
             pass
